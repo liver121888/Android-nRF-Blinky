@@ -63,6 +63,7 @@
 				android:layout_marginTop="@dimen/activity_horizontal_margin">
 
 				<androidx.constraintlayout.widget.ConstraintLayout
+					android:id="@+id/csl_led"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent">
 
@@ -164,7 +165,116 @@
 						app:layout_constraintRight_toRightOf="parent" />
 				</androidx.constraintlayout.widget.ConstraintLayout>
 			</com.google.android.material.card.MaterialCardView>
+
+			<GridLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+
+				<Button
+					android:id="@+id/btn_keepconnection"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="0"
+					android:layout_column="0"
+					android:text="123 Keep"
+					android:textAllCaps="false"/>
+
+				<Button
+					android:id="@+id/btn_requestbond"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="1"
+					android:layout_column="0"
+					android:textAllCaps="false"
+					android:text="6 Bond" />
+				<Button
+					android:id="@+id/btn_synctimeage"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="4 Time"
+					android:textAllCaps="false"
+					android:layout_row="0"
+					android:layout_column="1"/>
+
+				<Button
+					android:id="@+id/btn_completebond"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="1"
+					android:layout_column="1"
+					android:textAllCaps="false"
+					android:text="17 Complete" />
+
+				<Button
+					android:id="@+id/btn_validatebond"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="0"
+					android:layout_column="2"
+					android:textAllCaps="false"
+					android:text="9 Validate" />
+				<Button
+					android:id="@+id/btn_breakbond"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="1"
+					android:layout_column="2"
+					android:textAllCaps="false"
+					android:text="7 Break" />
+				<Button
+					android:id="@+id/btn_fastsync"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="3"
+					android:layout_column="0"
+					android:textAllCaps="false"
+					android:text="2 Sync Fast" />
+				android:text="7 Break" />
+				<Button
+					android:id="@+id/btn_ecg_realtime"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="3"
+					android:layout_column="1"
+					android:textAllCaps="false"
+					android:text="19 ECG Realtime" />
+				<Button
+					android:id="@+id/btn_fatigue_and_circulation"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="4"
+					android:layout_column="0"
+					android:textAllCaps="false"
+					android:text="18 Fatigue n circulation" />
+
+				<Button
+					android:id="@+id/btn_hrv_realtime"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_row="3"
+					android:layout_column="2"
+					android:textAllCaps="false"
+					android:text="29 HRV Realtime" />
+
+
+			</GridLayout>
+
+			<com.github.mikephil.charting.charts.LineChart
+				android:layout_marginStart="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:id="@+id/chart"
+				android:layout_width="match_parent"
+				android:layout_height="250dp"/>
+
+
+
+
 		</LinearLayout>
+
+
 	</ScrollView>
 
 	<LinearLayout

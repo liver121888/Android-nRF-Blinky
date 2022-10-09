@@ -26,6 +26,8 @@ import android.bluetooth.BluetoothDevice;
 
 import androidx.annotation.NonNull;
 
+import no.nordicsemi.android.ble.data.Data;
+
 public interface BlinkyButtonCallback {
 
     /**
@@ -33,6 +35,7 @@ public interface BlinkyButtonCallback {
      *
      * @param device the target device.
      * @param pressed true if the button was pressed, false if released.
+     * @param data
      */
-    void onButtonStateChanged(@NonNull final BluetoothDevice device, final boolean pressed);
+    void onButtonStateChanged(@NonNull final BluetoothDevice device, final boolean pressed, Data data);
 }

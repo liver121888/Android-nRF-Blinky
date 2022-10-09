@@ -25,10 +25,12 @@ package no.nordicsemi.android.blinky;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +49,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+
 import no.nordicsemi.android.blinky.adapter.DevicesAdapter;
 import no.nordicsemi.android.blinky.adapter.DiscoveredBluetoothDevice;
 import no.nordicsemi.android.blinky.databinding.ActivityScannerBinding;
@@ -55,6 +58,7 @@ import no.nordicsemi.android.blinky.viewmodels.ScannerStateLiveData;
 import no.nordicsemi.android.blinky.viewmodels.ScannerViewModel;
 
 public class ScannerActivity extends AppCompatActivity implements DevicesAdapter.OnItemClickListener {
+    private static final String TAG = "ScannerActivity";
     // This flag is false when the app is first started (cold start).
     // In this case, the animation will be fully shown (1 sec).
     // Subsequent launches will display it only briefly.
@@ -96,7 +100,7 @@ public class ScannerActivity extends AppCompatActivity implements DevicesAdapter
                     // Keep the splash screen on-screen for longer periods.
                     // Handle the splash screen transition.
                     final long then = System.currentTimeMillis();
-                    splashScreen.setKeepOnScreenCondition(() -> {
+                    splashScreen.setKeepVisibleCondition(() -> {
                         final long now = System.currentTimeMillis();
                         return now < then + 900;
                     });
@@ -161,7 +165,7 @@ public class ScannerActivity extends AppCompatActivity implements DevicesAdapter
                         Manifest.permission.BLUETOOTH_SCAN)) {
                     Utils.markBluetoothScanPermissionRequested(this);
                 }
-                requestPermissions.launch(new String[] {
+                requestPermissions.launch(new String[]{
                         Manifest.permission.BLUETOOTH_SCAN,
                         Manifest.permission.BLUETOOTH_CONNECT,
                 });
@@ -225,6 +229,7 @@ public class ScannerActivity extends AppCompatActivity implements DevicesAdapter
         if (!Utils.isLocationPermissionRequired() ||
                 Utils.isLocationPermissionGranted(this)) {
             binding.noLocationPermission.getRoot().setVisibility(View.GONE);
+            Log.d(TAG, "startScan: yes location permission");
 
             // On Android 12+ a new BLUETOOTH_SCAN and BLUETOOTH_CONNECT permissions need to be
             // requested.
@@ -234,16 +239,20 @@ public class ScannerActivity extends AppCompatActivity implements DevicesAdapter
             //       BLUETOOTH_CONNECT permission.
             if (!Utils.isSorAbove() || Utils.isBluetoothScanPermissionGranted(this)) {
                 binding.noBluetoothPermission.getRoot().setVisibility(View.GONE);
+                Log.d(TAG, "startScan: yes bt permission");
 
                 // Bluetooth must be enabled
                 if (state.isBluetoothEnabled()) {
+                    Log.d(TAG, "startScan: bt on");
                     binding.bluetoothOff.getRoot().setVisibility(View.GONE);
 
                     // We are now OK to start scanning
                     scannerViewModel.startScan();
+                    Log.d(TAG, "startScan: start scanning");
                     binding.stateScanning.setVisibility(View.VISIBLE);
 
                     if (!state.hasRecords()) {
+                        Log.d(TAG, "startScan: no device");
                         binding.noDevices.getRoot().setVisibility(View.VISIBLE);
 
                         if (!Utils.isLocationRequired(this) ||
@@ -252,10 +261,14 @@ public class ScannerActivity extends AppCompatActivity implements DevicesAdapter
                         } else {
                             binding.noDevices.noLocation.setVisibility(View.VISIBLE);
                         }
+                        Log.d(TAG, "startScan LocationRequired: " + Utils.isLocationRequired(this));
+                        Log.d(TAG, "startScan LocationEnabled: " + Utils.isLocationEnabled(this));
                     } else {
+                        Log.d(TAG, "startScan: yes device");
                         binding.noDevices.getRoot().setVisibility(View.GONE);
                     }
                 } else {
+                    Log.d(TAG, "startScan: bt is not enable");
                     binding.bluetoothOff.getRoot().setVisibility(View.VISIBLE);
                     binding.stateScanning.setVisibility(View.INVISIBLE);
                     binding.noDevices.getRoot().setVisibility(View.GONE);
@@ -264,6 +277,7 @@ public class ScannerActivity extends AppCompatActivity implements DevicesAdapter
                     scannerViewModel.clear();
                 }
             } else {
+                Log.d(TAG, "startScan: no location permission");
                 binding.noBluetoothPermission.getRoot().setVisibility(View.VISIBLE);
                 binding.bluetoothOff.getRoot().setVisibility(View.GONE);
                 binding.stateScanning.setVisibility(View.INVISIBLE);
@@ -329,6 +343,16 @@ public class ScannerActivity extends AppCompatActivity implements DevicesAdapter
     private void requestBluetoothEnabled() {
         if (Utils.isBluetoothConnectPermissionGranted(this)) {
             final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             startActivity(enableIntent);
         }
     }

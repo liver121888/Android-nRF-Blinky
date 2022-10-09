@@ -22,11 +22,19 @@
 
 package no.nordicsemi.android.blinky.viewmodels;
 
+import static no.nordicsemi.android.blinky.profile.data.Command.COMPLETE_BOND;
+import static no.nordicsemi.android.blinky.profile.data.Command.KEEP_CONNECTION;
+import static no.nordicsemi.android.blinky.profile.data.Command.REQUEST_BOND;
+import static no.nordicsemi.android.blinky.profile.data.Command.SYNC_TIME_AGE;
+
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
+import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
@@ -34,10 +42,12 @@ import no.nordicsemi.android.ble.ConnectRequest;
 import no.nordicsemi.android.ble.livedata.state.ConnectionState;
 import no.nordicsemi.android.blinky.adapter.DiscoveredBluetoothDevice;
 import no.nordicsemi.android.blinky.profile.BlinkyManager;
+import no.nordicsemi.android.blinky.profile.data.Command;
 import no.nordicsemi.android.log.LogSession;
 import no.nordicsemi.android.log.Logger;
 
 public class BlinkyViewModel extends AndroidViewModel {
+	private static final String TAG = "BlinkyViewModel";
 	private final BlinkyManager blinkyManager;
 	private BluetoothDevice device;
 	@Nullable
@@ -48,6 +58,7 @@ public class BlinkyViewModel extends AndroidViewModel {
 
 		// Initialize the manager.
 		blinkyManager = new BlinkyManager(getApplication());
+		Log.d(TAG, "support: "+Boolean.toString(blinkyManager.isSupported()));
 	}
 
 	public LiveData<ConnectionState> getConnectionState() {
@@ -110,8 +121,21 @@ public class BlinkyViewModel extends AndroidViewModel {
 	 *
 	 * @param on true to turn the LED on, false to turn it OFF.
 	 */
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
 	public void setLedState(final boolean on) {
 		blinkyManager.turnLed(on);
+	}
+
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	public void sendCMD(Command c) {
+		blinkyManager.generateRequest(c);
+	}
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	public Object readData() {
+			return blinkyManager.storeddata;
 	}
 
 	@Override
